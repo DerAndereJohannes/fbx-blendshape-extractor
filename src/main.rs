@@ -31,35 +31,6 @@ fn main() {
     }
 
     let mut blendshape_holder:BlendShapes = BlendShapes { shapes: new_blendshapes };
-    // blendshape_holder.shapes.iter().for_each(|x| println!("{}", x.name));
-
-
-
-    // println!("{:?}", emaciated_geometry);
-
-    // emaciated_geometry.iter()
-
-    
-    // let main_mesh: &Node = &file.children[8].children[0];
-    // println!("{:?}", emaciated_geometry.len());
-
-    // if let Property::F64Array(a) = &main_mesh.children[0].properties[0] {
-    //     println!("{:?}", a.len())
-    // }
-    // for geo in render_meshes.meshes.iter() {
-        // let mut new_blend = SkinnedMeshRenderer::new(format!("{}{}", geo.name.replace(".Shape", "__"),  NEWSHAPENAME), geo.vertices.len());
-        
-        // let mut new_blend = BlendShape::default();
-        // new_blend.name = format!("{}{}", geo.name.replace(".Shape", "__"),  NEWSHAPENAME);
-        // new_blend.vertices = Vec::with_capacity(geo.vertices.len());
-
-        // let mut new_blends: Vec<f64> = Vec::with_capacity(geo.vertices.len() - );
-
-
-
-        // println!("{}, {}, {:?}", new_blend.name, new_blend.vertices.len(), );
-
-    // }
 
     // create the new blendshape vertices and indices
     for shape in blendshape_holder.shapes.iter_mut() {
@@ -119,13 +90,6 @@ struct SkinnedMeshRenderer {
     vertices: Vec<Vector3>
 }
 
-// impl SkinnedMeshRenderer {
-//     pub fn new(name: String, vec_len: usize) -> SkinnedMeshRenderer {
-//         SkinnedMeshRenderer { name, vertices: Vec::with_capacity(vec_len) }
-//     }
-// }
-
-
 
 #[derive(Deserialize, Debug, Default, PartialEq)]
 struct Vector3 {
@@ -133,18 +97,6 @@ struct Vector3 {
     y: f64,
     z: f64
 }
-
-// impl Vector3 {
-//     pub fn new(x: f64, y: f64, z: f64) -> Vector3 {
-//         Vector3 { x, y, z }
-
-//     }
-
-//     pub fn equals(&self, other: &Vector3) -> bool {
-//         self.x == other.x && self.y == other.y && self.z == other.z
-//     }
-// }
-
 
 #[derive(Serialize, Debug, Default)]
 struct BlendShapes {

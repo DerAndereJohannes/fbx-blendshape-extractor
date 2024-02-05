@@ -7,28 +7,37 @@ use fbx::{self, Node, Property};
 fn main() {
     // Define constants
     // const NEWSHAPENAME: &'static str = "cprint";
+    const FBXFILENAME: &'static str = "sample.fbx";
+    const VERTEXFILENAME: &'static str = "sample-verts.json";
     const NEWSHAPENAME: &'static str = "BodyHeavy";
 
     // Load the vertex file
-    let file = std::fs::File::open("sample-verts.json").expect("Failed to open file");
+    let file = std::fs::File::open(VERTEXFILENAME).expect("Failed to open file");
     let reader = std::io::BufReader::new(file);
     let render_meshes: RendererMeshes = serde_json::from_reader(reader).unwrap();
 
 
     // load the fbx file
-    let file = std::fs::File::open("sample.fbx").expect("Failed to open file");
+    let file = std::fs::File::open(FBXFILENAME).expect("Failed to open file");
     let reader = std::io::BufReader::new(file);
     let file = fbx::File::read_from(reader).unwrap();
 
     // Extract wanted blendshapes from the file
     let mut new_blendshapes: Vec<BlendShape> = vec![];
-    let emaciated_geometry: Vec<&Node> = file.children[8].children.iter().filter(|x| {if let Property::String(name) = &x.properties[1] {name.contains(NEWSHAPENAME) && x.name == "Geometry" && !name.contains("cbs") && !name.contains("Tear") && !name.contains("Mouth") && !name.contains("Eyelashes") && !name.contains("Eyes")} else {false}}).collect::<Vec<&Node>>();
-    for n in emaciated_geometry.iter() {
-        if let Property::F64Array(a) = &n.children[2].properties[0] {
-            println!("{:?}", a.len())
-        }
-        new_blendshapes.push(BlendShape::new(n))
-    }
+    file.children[8].children.iter()
+                             .filter(|x| {
+                                 if let Property::String(name) = &x.properties[1] {
+                                     name.contains(NEWSHAPENAME) && 
+                                         x.name == "Geometry" && 
+                                         !name.contains("cbs") && 
+                                         !name.contains("Tear") && 
+                                         !name.contains("Mouth") && 
+                                         !name.contains("Eyelashes") && 
+                                         !name.contains("Eyes")
+                                 } else {
+                                     false
+                                 }
+                             }).for_each(|x| new_blendshapes.push(BlendShape::new(x)));
 
     let mut blendshape_holder:BlendShapes = BlendShapes { shapes: new_blendshapes };
 

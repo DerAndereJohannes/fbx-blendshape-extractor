@@ -4,20 +4,45 @@ use fbx::{self, Node, Property};
 
 fn main() {
     // Define constants
-    const FBXFILENAME: &'static str = "sample.fbx";
-    const VERTEXFILENAME: &'static str = "sample-verts.json";
+    const FBXFILENAME: &'static str = "cprint-wrapped.fbx";
+    const VERTEXFILENAME: &'static str = "genesis-verts.json";
     const BLENDSHAPEFILENAME: &'static str = "cprint-blendshapes.json";
-    const OLDSHAPENAME: &'static str = "BodyHeavy";
+    const OLDSHAPENAME: &'static str = "cprint";
     const NEWSHAPENAME: &'static str = "cprint";
 
+    // keep the vert file consistent, but allow for alternative FBX file naming
+    let input_fbx: String = {
+        if std::env::args().len() == 3 {
+            std::env::args().nth(1).unwrap_or(FBXFILENAME.to_string()).to_string()
+        } else {
+            FBXFILENAME.to_string()
+        }
+    };
+
+    let input_verts: String = {
+        if std::env::args().len() == 3 {
+            std::env::args().nth(2).unwrap_or(VERTEXFILENAME.to_string()).to_string()
+        } else {
+            VERTEXFILENAME.to_string()
+        }
+    };
+
     // Load the vertex file
-    let file = std::fs::File::open(VERTEXFILENAME).expect("Failed to open file");
+    let file = std::fs::File::open(&input_verts).unwrap_or_else(|_err| {
+        unwrap_handler(format!("The file '{}' could not be found. Please make sure that it is in the folder.", input_verts).as_str());
+        std::process::exit(0);
+    });
+
     let reader = std::io::BufReader::new(file);
     let render_meshes: RendererMeshes = serde_json::from_reader(reader).unwrap();
 
 
     // load the fbx file
-    let file = std::fs::File::open(FBXFILENAME).expect("Failed to open file");
+    let file = std::fs::File::open(&input_fbx).unwrap_or_else(|_err| {
+        unwrap_handler(format!("The file '{}' could not be found. Please make sure that it is in the folder.", input_fbx).as_str());
+        std::process::exit(0);
+    });
+
     let reader = std::io::BufReader::new(file);
     let file = fbx::File::read_from(reader).unwrap();
 
@@ -202,3 +227,9 @@ impl BlendShape {
     }
 }
 
+fn unwrap_handler(err: &str) {
+    eprintln!("Error: {}", err);
+    println!("Press Enter to exit...");
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).expect("Failed to read line");
+}
